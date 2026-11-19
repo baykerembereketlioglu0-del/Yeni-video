@@ -1,3 +1,4 @@
-build/
+build/*
+!build/audio/
 __pycache__/
 *.pyc
