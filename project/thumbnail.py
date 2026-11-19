@@ -32,8 +32,11 @@ def thumb(lang="en"):
     skyline_vice(g, 760, t, scale=1.1)
     palm(g, 900, 1100, 1.6, t, sil="#3a2552"); palm(g, 1880, 1100, 1.5, t, sil="#3a2552", flip=True)
     g.rect_fill(0, 0, W, H, "#2a1030", 0.18)
-    CH["lucia_prison"].draw(g, 1440, 1560, 1250, t, pose="cross", face={"brows": "angry", "mouth": "smirk"},
-                            look=-0.15, blink_seed=2.0)
+    from realistic import Adult, ADULTS
+    from atmo import vignette as vg, grain as gr, glow_at
+    glow_at(g, 1400, 380, 600, "#ffb070", 0.35)
+    Adult(ADULTS()["lucia_prison"], 3).draw(g, 1420, 300 + 7 * 330, 7.5 * 330, t, pose="cross",
+                                             face={"brows": "angry", "mouth": "smirk"}, look=-0.15, blink_seed=2.0)
     for xx in (850, 1090, 1830):
         g.rrect(xx, -20, 44, H + 40, 22, "#3b3f55")
         g.line(xx + 12, 0, xx + 12, H, color="#7a8090", w=5)

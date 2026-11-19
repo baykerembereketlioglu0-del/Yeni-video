@@ -13,6 +13,8 @@ from gfx import G, W, H, FPS, PAL, OUTLINE, C, text, text_w, clamp, ease_out, ea
 from timeline import build, Ctx, ROOT
 from script_data import CHAPTERS
 import scenes
+import scenes2
+from atmo import age_box, era_label
 
 XF = 0.2   # crossfade seconds between shots
 SHOTS, TOTAL = build()
@@ -24,9 +26,11 @@ def shot_at(T):
     return SHOTS[-1]
 
 def draw_shot(g, sh, t):
-    g.save()
+    n = g.c.save()
+    old = g.lw
     scenes.SCENES[sh.s["scene"]](g, Ctx(sh, t))
-    g.restore()
+    g.c.restoreToCount(n)
+    g.lw = old
 
 def last_badge_before(idx):
     for j in range(idx, -1, -1):
@@ -35,42 +39,49 @@ def last_badge_before(idx):
             return b, j
     return None, 0
 
+ERA = {"b1": "LIBERTY CITY", "b2": "LIBERTY CITY", "b3": "LIBERTY CITY", "b4": "LIBERTY CITY", "b5": "LIBERTY CITY",
+       "b6": "LIBERTY CITY", "c1a": "LEAVING LIBERTY CITY", "c1b": "VICE CITY, LEONIDA", "c1c": "VICE CITY, LEONIDA",
+       "c5a": "JASON · THE EARLY YEARS", "c5b": "JASON · U.S. ARMY"}
+
 def draw_badge(g, sh, t):
     b = sh.s.get("badge")
-    if not b:
-        return
     prev = SHOTS[sh.i - 1].s.get("badge") if sh.i > 0 else None
     k = ease_back(clamp(t / 0.45), 2.0) if prev != b else 1.0
-    size = 58
-    w = text_w(b, size) + 64
-    g.save(); g.tr(70 + w / 2, 78); g.sc(k)
-    g.rrect(-w / 2 + 5, -42 + 7, w, 84, 42, "#1a1020", outline=None, a=0.3)
-    g.rrect(-w / 2, -42, w, 84, 42, "#2b2233", outline="#fbf7f0", w=5)
-    text(g, b, 0, 21, size, fill="#ffd166" if b.startswith("AGE") else "#fbf7f0", outline=None, shadow=False)
-    g.restore()
+    era = ERA.get(sh.id)
+    if b and b.startswith("AGE"):
+        age_box(g, b, k)
+    elif b and b != "JASON":
+        era = era or b
+    if era:
+        pe = ERA.get(SHOTS[sh.i - 1].id) if sh.i > 0 else None
+        pb = SHOTS[sh.i - 1].s.get("badge") if sh.i > 0 else None
+        prev_era = pe or (pb if pb and not pb.startswith("AGE") and pb != "JASON" else None)
+        a = clamp(t / 0.4) if prev_era != era else 1.0
+        era_label(g, era, a)
 
 def draw_banner(g, sh, t):
     ch = sh.s.get("chapter")
     if ch is None:
         return
     t0 = 0.25 if ch > 0 else 0.15
-    hold = 2.8
-    if t < t0 or t > t0 + hold + 0.5:
+    hold = 2.6
+    if t < t0 or t > t0 + hold + 0.6:
         return
-    kin = ease_out((t - t0) / 0.45)
-    kout = ease_io((t - t0 - hold) / 0.45)
+    a = clamp((t - t0) / 0.4) * (1 - clamp((t - t0 - hold) / 0.5))
     title = CHAPTERS[ch]
     parts = title.split(" · ")
     num, name = (parts[0], parts[1]) if len(parts) == 2 else ("", title)
-    size = 74
-    w = max(text_w(name, size), text_w(num, 44)) + 140
-    x = lerp(-w, 0, kin) - kout * (w + 60)
-    y = 840
-    g.save(); g.tr(x, y)
-    g.poly([(0, -70), (w + 40, -70), (w, 70), (0, 70)], "#2b2233", outline=None)
-    g.poly([(0, -58), (w + 18, -58), (w - 10, 58), (0, 58)], PAL["red"], outline="#fbf7f0", w=5)
-    text(g, num, 60, -16, 40, fill="#ffd166", outline=None, align="left", shadow=False)
-    text(g, name, 60, 44, size, fill="#fbf7f0", outline="#2b2233", ow=10, align="left", shadow=False)
+    num = "PROLOGUE" if num == "PROLOGUE" else "CHAPTER " + num
+    rise = (1 - ease_out(clamp((t - t0) / 0.6))) * 30
+    g.save(); g.alpha(a); g.tr(0, rise)
+    import skia as _sk
+    sh_ = _sk.GradientShader.MakeLinear([_sk.Point(0, 820), _sk.Point(0, 1080)], [C("#0a0610", 0), C("#0a0610", 0.65)], [0, 1])
+    p = _sk.Paint(); p.setShader(sh_); g.c.drawRect(_sk.Rect.MakeXYWH(0, 820, W, 260), p)
+    wn = text_w(num, 30, "serif")
+    g.line(W / 2 - wn / 2 - 150, 905, W / 2 - wn / 2 - 30, 905, color="#e9dcc4", w=2.5)
+    g.line(W / 2 + wn / 2 + 30, 905, W / 2 + wn / 2 + 150, 905, color="#e9dcc4", w=2.5)
+    text(g, num, W / 2, 916, 30, fill="#e9dcc4", outline=None, shadow=False, name="serif")
+    text(g, name, W / 2, 1000, 80, fill="#ffffff", outline="#1b1622", ow=10)
     g.restore()
 
 def render_frame(surface, T, tmp_surface=None):

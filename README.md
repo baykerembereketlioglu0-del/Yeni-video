@@ -33,6 +33,12 @@ Her video aynı döngüyü izliyor. Bizim videomuz da bu döngüye göre kuruldu
 
 `docs/reference_thumbnails.jpg` dosyasında kanalın 7 thumbnail'i yan yana duruyor.
 
+### Görsel stil (video içi karelerden çıkarıldı)
+- **Çocukluk = chibi**, **yetişkinlik = yarı-gerçekçi**: ince kontur, iki tonlu cel-shading yüzler, gerçekçi orantı. Geçiş "the cute kid? Gone." anında.
+- Sinematik sahneler: gradyan gökyüzü, ışık hüzmeleri, uçuşan partiküller, arka plan bulanıklığı (derinlik), vinyet, film grain.
+- Ekran yazıları: sol üstte beyaz "AGE X" kutusu, sağ üstte serif konum etiketi, oklu isim etiketleri ("BRIAN · your landlord"), beyaz konuşma balonları.
+- `project/realistic.py` yetişkin rigi, `project/atmo.py` atmosfer ve etiketler, `project/scenes2.py` yetişkin sahneleri.
+
 ## 2. Bizim video
 
 - **Konu:** Lucia Caminos (GTA 6). Oyun 19 Kasım 2026'da çıktı ve Metacritic'te 99 aldı. Arama hacmi şu an zirvede.

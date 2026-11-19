@@ -206,6 +206,7 @@ def typeface(name):
         paths = {
             "display": os.path.join(ROOT, "assets/fonts/LilitaOne-Regular.ttf"),
             "display_tr": os.path.join(ROOT, "assets/fonts/Baloo2-ExtraBold.ttf"),
+            "serif": os.path.join(ROOT, "assets/fonts/Cinzel-Bold.ttf"),
             "ui": "/usr/share/fonts/opentype/inter/Inter-ExtraBold.otf",
             "ui_reg": "/usr/share/fonts/opentype/inter/Inter-SemiBold.otf",
         }
