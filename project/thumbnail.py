@@ -35,7 +35,7 @@ def thumb(lang="en"):
     from realistic import Adult, ADULTS
     from atmo import vignette as vg, grain as gr, glow_at
     glow_at(g, 1400, 380, 600, "#ffb070", 0.35)
-    Adult(ADULTS()["lucia_prison"], 3).draw(g, 1420, 300 + 7 * 330, 7.5 * 330, t, pose="cross",
+    Adult(ADULTS()["lucia_prison"], 3).draw(g, 1420, 400 + 7 * 320, 7.5 * 320, t, pose="cross",
                                              face={"brows": "angry", "mouth": "smirk"}, look=-0.15, blink_seed=2.0)
     for xx in (850, 1090, 1830):
         g.rrect(xx, -20, 44, H + 40, 22, "#3b3f55")

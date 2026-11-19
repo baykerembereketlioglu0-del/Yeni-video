@@ -17,24 +17,24 @@ def sp(pts, close=True, k=0.5):
 # ------------------------------------------------------------------ cast
 def ADULTS():
     return {
-        "lucia": dict(sex="f", skin="#b9784f", hair="#241614", hair_hl="#5b3a2c", hair_style="long_wavy",
-                      eyes="#3b2418", lips="#a5574f", outfit="jacket", top="#f4efe6", jacket="#4a6fa8",
-                      pants="#26283a", shoes="#1e1a22", acc=["hoops"]),
-        "lucia_night": dict(sex="f", skin="#b9784f", hair="#241614", hair_hl="#5b3a2c", hair_style="long_wavy",
-                            eyes="#3b2418", lips="#a5574f", outfit="tank", top="#1f1b2c", pants="#26283a",
-                            shoes="#1e1a22", acc=["hoops"]),
-        "lucia_prison": dict(sex="f", skin="#b9784f", hair="#241614", hair_hl="#5b3a2c", hair_style="pony",
-                             eyes="#3b2418", lips="#9c5a50", outfit="jumpsuit", top="#e8772c", pants="#e8772c",
+        "lucia": dict(sex="f", skin="#cc916b", hair="#24170f", hair_hl="#5a3c28", hair_style="high_pony",
+                      eyes="#3a2416", lips="#b06a5c", outfit="crop_tank", top="#f3f0ea", pants="#86a3cc",
+                      shoes="#f2efe8", acc=["hoops_small", "necklace"]),
+        "lucia_night": dict(sex="f", skin="#cc916b", hair="#24170f", hair_hl="#5a3c28", hair_style="high_pony",
+                            eyes="#3a2416", lips="#b06a5c", outfit="tank", top="#1c1a24", pants="#5f7fae",
+                            shoes="#1e1a22", acc=["hoops_small", "necklace"]),
+        "lucia_prison": dict(sex="f", skin="#cc916b", hair="#24170f", hair_hl="#5a3c28", hair_style="high_pony",
+                             eyes="#3a2416", lips="#a8645a", outfit="jumpsuit", top="#e8772c", pants="#e8772c",
                              shoes="#f2efe8", acc=["hoops_small"]),
-        "lucia_teen": dict(sex="f", skin="#b9784f", hair="#241614", hair_hl="#5b3a2c", hair_style="pony",
-                           eyes="#3b2418", lips="#a5574f", outfit="tank", top="#e85d9a", pants="#4a6fa8",
-                           shoes="#f2efe8", acc=["hoops"], teen=True),
-        "jason": dict(sex="m", skin="#dca47c", hair="#4a2e1e", hair_hl="#7a5236", hair_style="short_messy",
-                      eyes="#4a5a3a", lips="#b77a66", outfit="tee", top="#556347", pants="#34425a",
-                      shoes="#1e1a22", beard="stubble", acc=["tattoos"]),
-        "jason_army": dict(sex="m", skin="#dca47c", hair="#4a2e1e", hair_hl="#7a5236", hair_style="buzz",
-                           eyes="#4a5a3a", lips="#b77a66", outfit="army", top="#66703f", pants="#56602f",
-                           shoes="#3a2e24", acc=["helmet"]),
+        "lucia_teen": dict(sex="f", skin="#cc916b", hair="#24170f", hair_hl="#5a3c28", hair_style="pony",
+                           eyes="#3a2416", lips="#b06a5c", outfit="tank", top="#e85d9a", pants="#86a3cc",
+                           shoes="#f2efe8", acc=["hoops_small"], teen=True),
+        "jason": dict(sex="m", skin="#e0ab88", hair="#2e1e14", hair_hl="#5a3e2a", hair_style="short_swept",
+                      eyes="#4e5a3c", lips="#b9806a", outfit="open_shirt", top="#f3f0ea", shirt="#2f8c9c",
+                      pants="#a8946a", shoes="#4a3a2a", beard="short_beard", acc=["tattoos", "watch"], build=1.12),
+        "jason_army": dict(sex="m", skin="#e0ab88", hair="#2e1e14", hair_hl="#5a3e2a", hair_style="buzz",
+                           eyes="#4e5a3c", lips="#b9806a", outfit="army", top="#66703f", pants="#56602f",
+                           shoes="#3a2e24", beard="stubble", acc=["helmet"], build=1.12),
         "mom": dict(sex="f", skin="#b5744d", hair="#2a1a16", hair_hl="#4e3328", hair_style="bun", eyes="#3b2418",
                     lips="#9c5a50", outfit="cardigan", top="#efe4cf", jacket="#b8608f", pants="#463a5e",
                     shoes="#1e1a22", acc=["earrings"], age=1),
@@ -142,7 +142,7 @@ class Adult:
         f = 0.92 if s["sex"] == "f" else 1.0
         P = dict(
             crown=-7.5, head_c=-7.0, chin=-6.5,
-            sh_y=-6.05, sh_x=0.86 * f + (0.06 if s.get("sex") == "m" else 0),
+            sh_y=-6.05, sh_x=(0.86 * f + (0.06 if s.get("sex") == "m" else 0)) * s.get("build", 1.0),
             waist_y=-4.55, waist_x=0.58 if s["sex"] == "f" else 0.72,
             hip_y=-3.75, hip_x=0.8 if s["sex"] == "f" else 0.74,
             l1=1.45, l2=1.32,
@@ -191,7 +191,7 @@ class Adult:
     def _neck(self, g):
         sk, sh, dk = self._skin()
         P = self.P
-        w = 0.17 if self.s["sex"] == "f" else 0.21
+        w = (0.17 if self.s["sex"] == "f" else 0.21) * self.s.get("build", 1.0) ** 1.5
         p = sp([(-w, P["chin"] - 0.2), (w, P["chin"] - 0.2), (w + 0.02, P["sh_y"] - 0.25), (w + 0.16, P["sh_y"] - 0.08),
                 (-w - 0.16, P["sh_y"] - 0.08), (-w - 0.02, P["sh_y"] - 0.25)], k=0.2)
         g.shape(p, sk)
@@ -203,7 +203,7 @@ class Adult:
         s = self.s; sk, sh, dk = self._skin()
         cy = self.P["head_c"]
         fem = s["sex"] == "f"
-        jw = 0.3 if fem else 0.33
+        jw = 0.3 if fem else 0.33 + 0.03 * (s.get("build", 1.0) - 1) / 0.12
         fx = look * 0.07
         # ears
         for side in (-1, 1):
@@ -234,6 +234,19 @@ class Adult:
         g.strokep(fp, LINE)
         # stubble / beard
         beard = s.get("beard")
+        if beard == "short_beard":
+            g.c.save(); g.c.clipPath(fp, doAntiAlias=True)
+            bp = skia.Path(); bp.moveTo(-0.37, cy + 0.02); bp.cubicTo(-0.33, cy + 0.62, 0.33, cy + 0.62, 0.37, cy + 0.02)
+            bp.cubicTo(0.24, cy + 0.2, 0.16, cy + 0.24, 0.1, cy + 0.27); bp.cubicTo(0.06, cy + 0.25, -0.06, cy + 0.25, -0.1, cy + 0.27)
+            bp.cubicTo(-0.16, cy + 0.24, -0.24, cy + 0.2, -0.37, cy + 0.02)
+            g.fillp(bp, s["hair"], 0.55)
+            mp = skia.Path(); mp.moveTo(-0.11, cy + 0.33); mp.cubicTo(-0.1, cy + 0.27, 0.1, cy + 0.27, 0.11, cy + 0.33)
+            mp.cubicTo(0.06, cy + 0.3, -0.06, cy + 0.3, -0.11, cy + 0.33)
+            g.fillp(mp, s["hair"], 0.6)
+            for (dx, dy, r) in self.stubble:
+                if bp.contains(dx, cy + dy):
+                    g.fillp(G.circle_p(dx, cy + dy, r * 1.1), s["hair"], 0.3)
+            g.c.restore()
         if beard == "stubble":
             g.c.save(); g.c.clipPath(fp, doAntiAlias=True)
             bp = skia.Path(); bp.moveTo(-0.37, cy + 0.08); bp.cubicTo(-0.3, cy + 0.6, 0.3, cy + 0.6, 0.37, cy + 0.08)
@@ -408,7 +421,8 @@ class Adult:
         ul.cubicTo(mx + w * 0.5, my + 0.004, mx - w * 0.5, my + 0.004, mx - w, my + cl); ul.close()
         g.fillp(ul, shade(lip, 0.88) if fem else shade(sk, 0.78))
         ll = skia.Path(); ll.moveTo(mx - w * 0.9, my + cl * 0.8 + 0.003)
-        ll.cubicTo(mx - w * 0.4, my + 0.045, mx + w * 0.4, my + 0.045, mx + w * 0.9, my + cr * 0.8 + 0.003)
+        lt = 0.058 if fem else 0.045
+        ll.cubicTo(mx - w * 0.4, my + lt, mx + w * 0.4, my + lt, mx + w * 0.9, my + cr * 0.8 + 0.003)
         ll.cubicTo(mx + w * 0.4, my + 0.006, mx - w * 0.4, my + 0.006, mx - w * 0.9, my + cl * 0.8 + 0.003); ll.close()
         g.fillp(ll, lip if fem else shade(sk, 0.86))
         if not fem:
@@ -441,6 +455,15 @@ class Adult:
             g.line(0.5, cy - 0.3, 0.6 + sway * 2, cy + 0.6, color=s["hair_hl"], w=g.lw * 1.1, a=0.6)
         elif st == "bun":
             g.shape(G.circle_p(0.02, cy - 0.55, 0.17), col, LINE)
+        elif st == "high_pony":
+            pts = [(0.0, cy - 0.66), (0.22 + sway, cy - 0.7), (0.42 + sway, cy - 0.5), (0.5 + sway, cy - 0.2),
+                   (0.56 + sway * 2, cy + 0.15), (0.5 + sway * 2, cy + 0.45), (0.62 + sway * 2, cy + 0.75),
+                   (0.45 + sway * 2, cy + 0.95), (0.34 + sway, cy + 0.6), (0.3, cy + 0.2), (0.24, cy - 0.25), (0.05, cy - 0.5)]
+            g.shape(sp(pts), col, LINE)
+            for k in range(4):
+                q = skia.Path(); q.moveTo(0.3 + k * 0.04, cy - 0.45); q.cubicTo(0.5 + k * 0.03, cy - 0.1, 0.38, cy + 0.3, 0.5 + sway * 2, cy + 0.75 - k * 0.1)
+                g.strokep(q, s["hair_hl"], w=g.lw * 1.1, a=0.55)
+            g.shape(G.ellipse_p(0.04, cy - 0.66, 0.2, 0.13), col, LINE)
         elif st == "long_grey":
             pts = [(0, cy - 0.5), (0.4, cy - 0.4), (0.48, cy + 0.1), (0.52, cy + 0.55), (0.42, cy + 0.85),
                    (-0.42, cy + 0.85), (-0.52, cy + 0.55), (-0.48, cy + 0.1), (-0.4, cy - 0.4)]
@@ -466,6 +489,41 @@ class Adult:
             for k, (a, b) in enumerate(((-0.25, -0.5), (-0.12, -0.53), (0.12, -0.53), (0.25, -0.48))):
                 hq = skia.Path(); hq.moveTo(a, cy + b + 0.02); hq.quadTo(a * 1.15, cy + b + 0.06, a * 1.25, cy + b + 0.11)
                 g.strokep(hq, hl, w=g.lw * 1.3, a=0.75)
+        elif st == "high_pony":
+            q = skia.Path()
+            q.moveTo(-0.37, cy - 0.02)
+            q.cubicTo(-0.44, cy - 0.5, -0.25, cy - 0.64, 0.02, cy - 0.62)
+            q.cubicTo(0.3, cy - 0.64, 0.45, cy - 0.48, 0.37, cy - 0.02)
+            q.cubicTo(0.34, cy - 0.2, 0.25, cy - 0.32, 0.1, cy - 0.35)
+            q.cubicTo(0.05, cy - 0.36, 0.0, cy - 0.38, -0.02, cy - 0.4)
+            q.cubicTo(-0.06, cy - 0.36, -0.15, cy - 0.35, -0.24, cy - 0.32)
+            q.cubicTo(-0.33, cy - 0.24, -0.35, cy - 0.12, -0.37, cy - 0.02); q.close()
+            g.shape(q, col, LINE)
+            for k in range(6) if False else []:
+                xx = -0.28 + k * 0.11
+                hq = skia.Path(); hq.moveTo(xx, cy - 0.38 + abs(xx) * 0.1); hq.quadTo(xx * 0.7, cy - 0.52, xx * 0.35 + 0.03, cy - 0.6)
+                g.strokep(hq, hl, w=g.lw * 1.0, a=0.6)
+            for sd in (-1, 1):   # loose strands framing the face
+                q = skia.Path(); q.moveTo(sd * 0.27, cy - 0.3)
+                q.cubicTo(sd * 0.36, cy - 0.1, sd * 0.3, cy + 0.08, sd * 0.36, cy + 0.26)
+                g.strokep(q, LINE, w=g.lw * 3.2); g.strokep(q, col, w=g.lw * 1.6)
+        elif st == "short_swept":
+            q = skia.Path()
+            q.moveTo(-0.37, cy - 0.06)
+            q.cubicTo(-0.42, cy - 0.5, -0.3, cy - 0.68, 0.0, cy - 0.68)
+            q.cubicTo(0.3, cy - 0.7, 0.46, cy - 0.52, 0.37, cy - 0.06)
+            q.lineTo(0.34, cy - 0.2); q.cubicTo(0.3, cy - 0.32, 0.2, cy - 0.38, 0.1, cy - 0.36)
+            q.cubicTo(0.0, cy - 0.42, -0.12, cy - 0.44, -0.22, cy - 0.38)
+            q.cubicTo(-0.3, cy - 0.34, -0.33, cy - 0.24, -0.34, cy - 0.18); q.close()
+            g.shape(q, col, LINE)
+            g.c.save(); g.c.clipPath(q, doAntiAlias=True)
+            for k in range(6):
+                xx = -0.25 + k * 0.1
+                hq = skia.Path(); hq.moveTo(xx, cy - 0.44); hq.quadTo(xx + 0.08, cy - 0.56, xx + 0.15, cy - 0.6)
+                g.strokep(hq, hl, w=g.lw * 1.1, a=0.65)
+            g.c.restore(); g.strokep(q, LINE)
+            for sd in (-1, 1):
+                g.fillp(G.rrect_p(sd * 0.37 - 0.03, cy - 0.22, 0.06, 0.2, 0.02), col, 0.6)
         elif st == "short_messy":
             q = skia.Path()
             q.moveTo(-0.37, cy - 0.12)
@@ -510,7 +568,43 @@ class Adult:
                 (sx * 0.98, sy + 0.5), (sx, sy + 0.08), (sx * 0.75, sy - 0.08), (nw, sy - 0.18)]
         bp = sp(body, k=0.55)
         top = s.get("top", "#888888")
-        if o in ("tank",):
+        if o == "crop_tank":
+            g.shape(bp, sk, LINE)
+            g.fillp(G.circle_p(0.0, wy - 0.02, 0.016), sh)
+            tq = sp([(-0.2, sy - 0.16), (-0.32, sy - 0.02), (-sx * 0.7, sy + 0.45), (-sx * 0.82, sy + 0.85),
+                     (-wx * 1.08, wy - 0.2), (wx * 1.08, wy - 0.2), (sx * 0.82, sy + 0.85), (sx * 0.7, sy + 0.45),
+                     (0.32, sy - 0.02), (0.2, sy - 0.16), (0, sy - 0.1)], k=0.3)
+            g.shape(tq, top, LINE)
+            self._fold_shadow(g, tq, top)
+            g.line(-wx * 1.04, wy - 0.32, wx * 1.04, wy - 0.32, color=shade(top, 0.8), w=g.lw * 0.9)
+            band = sp([(-wx * 1.0, wy + 0.1), (wx * 1.0, wy + 0.1), (hx * 1.02, hy + 0.15), (-hx * 1.02, hy + 0.15)], k=0.1)
+            g.shape(band, s.get("pants"), LINE)
+            g.line(-wx * 0.98, wy + 0.24, wx * 0.98, wy + 0.24, color=shade(s.get("pants"), 0.75), w=g.lw * 0.8)
+            g.fillp(G.circle_p(0.0, wy + 0.18, 0.03), "#d8b04a")
+        elif o == "open_shirt":
+            g.shape(bp, top, LINE)
+            self._fold_shadow(g, bp, top)
+            q = skia.Path(); q.moveTo(-nw - 0.02, sy - 0.17); q.quadTo(0, sy + 0.14, nw + 0.02, sy - 0.17)
+            q.quadTo(0, sy + 0.03, -nw - 0.02, sy - 0.17); q.close()
+            g.shape(q, sk, LINE, w=g.lw * 0.8)
+            shirt = s.get("shirt")
+            for sd in (-1, 1):
+                pnl = sp([(sd * (nw + 0.02), sy - 0.2), (sd * sx * 0.8, sy - 0.07), (sd * sx * 1.03, sy + 0.08),
+                          (sd * sx * 1.0, sy + 0.55), (sd * wx * 1.1, sy + 1.05), (sd * hx * 1.06, hy + 0.12),
+                          (sd * 0.42, hy + 0.12), (sd * 0.36, sy + 0.9), (sd * 0.33, sy + 0.35), (sd * 0.26, sy + 0.05)], k=0.25)
+                g.shape(pnl, shirt, LINE)
+                g.c.save(); g.c.clipPath(pnl, doAntiAlias=True)
+                rnd = random.Random(7 + sd)
+                for i in range(22):
+                    lx, ly = rnd.uniform(-1.2, 1.2), rnd.uniform(sy - 0.2, hy + 0.2)
+                    lf = skia.Path(); lf.moveTo(lx, ly); lf.quadTo(lx + 0.06, ly - 0.08, lx + 0.14, ly - 0.02)
+                    lf.quadTo(lx + 0.06, ly + 0.02, lx, ly); lf.close()
+                    g.fillp(lf, tint(shirt, 0.45), 0.9)
+                g.c.restore()
+                self._fold_shadow(g, pnl, shirt, side=sd)
+                g.strokep(pnl, LINE)
+                g.line(sd * 0.3, sy + 0.38, sd * 0.47, sy + 0.12, color=shade(shirt, 0.7), w=g.lw)
+        elif o in ("tank",):
             g.shape(bp, sk, LINE)
             tq = sp([(-0.32, sy - 0.12), (-0.5, sy + 0.05), (-sx * 0.82, sy + 0.55), (-wx * 1.02, sy + 1.05), (-wx, wy),
                      (-hx, hy + 0.1), (hx, hy + 0.1), (wx, wy), (wx * 1.02, sy + 1.05), (sx * 0.82, sy + 0.55),
@@ -579,11 +673,15 @@ class Adult:
                 g.line(sd * 0.3, sy + 0.4, sd * 0.45, sy + 0.15, color=shade(jk, 0.75), w=g.lw)
                 if o == "jacket":
                     g.shape(G.rrect_p(sd * 0.55 - 0.12, sy + 0.5, 0.24, 0.16, 0.02), shade(jk, 0.92), LINE, w=g.lw * 0.6)
+        if "necklace" in s.get("acc", []):
+            q = skia.Path(); q.moveTo(-0.16, sy - 0.17); q.quadTo(0, sy + 0.22, 0.16, sy - 0.17)
+            g.strokep(q, "#a8842a", w=g.lw * 1.4); g.strokep(q, "#f0c85a", w=g.lw * 0.7)
+            g.shape(G.circle_p(0, sy + 0.06, 0.035), "#f0c85a", LINE, w=g.lw * 0.6)
         if "chain" in s.get("acc", []):
             q = skia.Path(); q.moveTo(-0.2, sy - 0.15); q.quadTo(0, sy + 0.35, 0.2, sy - 0.15)
             g.strokep(q, LINE, w=g.lw * 3.2); g.strokep(q, "#e9b949", w=g.lw * 1.8)
         # belt line
-        if o not in ("jumpsuit", "hawaiian"):
+        if o not in ("jumpsuit", "hawaiian", "crop_tank"):
             g.line(-hx * 0.98, hy + 0.08, hx * 0.98, hy + 0.08, color=LINE, w=g.lw)
 
     def _fold_shadow(self, g, path, col, side=1):
@@ -599,10 +697,11 @@ class Adult:
         s = self.s; P = self.P; sk, sh, dk = self._skin()
         o = s["outfit"]
         long_sleeve = o in ("jacket", "cardigan", "uniform", "suit", "army", "jumpsuit")
-        sleeve_col = {"jacket": s.get("jacket"), "cardigan": s.get("jacket")}.get(o, s.get("top"))
+        sleeve_col = {"jacket": s.get("jacket"), "cardigan": s.get("jacket"), "open_shirt": s.get("shirt")}.get(o, s.get("top"))
         fem = s["sex"] == "f"
         w0, w1, w2 = (0.36, 0.3, 0.22) if fem else (0.43, 0.35, 0.26)
         if o in ("jacket", "army", "uniform", "suit"): w0, w1, w2 = w0 * 1.12, w1 * 1.15, w2 * 1.2
+        bf = s.get("build", 1.0); w0, w1, w2 = w0 * bf, w1 * bf, w2 * bf
         for i, sd in enumerate((-1, 1)):
             shx, shy = sd * (P["sh_x"] - 0.16), P["sh_y"] + 0.2
             tx, ty = hands[i]
@@ -642,10 +741,14 @@ class Adult:
                     g.fillp(G.ellipse_p(lerp(shx, el[0], 0.5), lerp(shy, el[1], 0.5), 0.09, 0.07), "#2f3a5a", 0.4)
                 g.c.restore()
                 g.strokep(whole, LINE)
-                if o in ("tee", "hawaiian"):
+                if o in ("tee", "hawaiian", "open_shirt"):
                     mid = (lerp(shx, el[0], 0.5), lerp(shy, el[1], 0.5))
                     sl = capsule((shx, shy), mid, w0 * 1.06, w0 * 0.98)
                     g.shape(sl, sleeve_col, LINE)
+            if "watch" in s.get("acc", []) and sd == -1:
+                wp = (lerp(el[0], hd[0], 0.9), lerp(el[1], hd[1], 0.9))
+                g.shape(G.circle_p(wp[0], wp[1], w2 * 0.55), "#c9cdd5", LINE, w=g.lw * 0.8)
+                g.fillp(G.circle_p(wp[0], wp[1], w2 * 0.33), "#2a2a3a")
             # hand: mitten aligned with the forearm
             ang = math.degrees(math.atan2(hd[1] - el[1], hd[0] - el[0])) - 90
             g.save(); g.tr(hd[0], hd[1]); g.rot(ang)
@@ -732,6 +835,8 @@ class Adult:
             g.shape(up, pc, LINE); g.shape(lo, pc, LINE)
             g.fillp(G.circle_p(knee[0], knee[1], 0.165), pc)
             g.line(knee[0] + sd * 0.06, knee[1] - 0.6, knee[0] + sd * 0.05, knee[1] + 0.4, color=shade(pc, 0.75), w=g.lw * 0.9)
+            if s.get("outfit") == "open_shirt":
+                g.shape(G.rrect_p(sd * 0.48 - 0.13, -2.75, 0.26, 0.42, 0.04), shade(pc, 0.9), LINE, w=g.lw * 0.8)
             ax, ay = ankle
             q = sp([(ax - 0.15, ay - 0.05), (ax + 0.15, ay - 0.05), (ax + sd * 0.3 + 0.03, ay + 0.1), (ax + sd * 0.28, ay + 0.19),
                     (ax - 0.17, ay + 0.19)], k=0.3)
